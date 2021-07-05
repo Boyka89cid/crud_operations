@@ -8,9 +8,9 @@ class AuthService
     try
         {
           await _auth.signInWithEmailAndPassword(email: email, password: password);
-          User? user=FirebaseAuth.instance.currentUser;
+          User user=FirebaseAuth.instance.currentUser;
           if(user==null)
-            print("naa");
+            print("no");
           print(user?.uid.toString());
           return user;
         } on FirebaseAuthException catch(e)

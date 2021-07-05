@@ -1,6 +1,8 @@
 import 'package:crud_operations/authentication/auth.dart';
 import 'package:crud_operations/operation_screens/add_product.dart';
 import 'package:crud_operations/operation_screens/delete_product.dart';
+import 'package:crud_operations/operation_screens/show_products.dart';
+import 'package:crud_operations/operation_screens/update_product.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -11,7 +13,7 @@ Future<void > main() async
   await Firebase.initializeApp();
   runApp(
     MaterialApp(
-      home: DeleteProduct(),
+      home: UpdateProduct(),
     )
   );
 }

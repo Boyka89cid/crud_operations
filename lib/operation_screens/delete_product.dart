@@ -1,5 +1,4 @@
-import 'dart:convert';
-import 'dart:html';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:crud_operations/operation_screens/show_products.dart';
 import 'package:flutter/material.dart';
@@ -32,26 +31,17 @@ class DeleteProduct extends StatelessWidget
           ElevatedButton(
             onPressed: () async
             {
-              //FirebaseFirestore _db = FirebaseFirestore.instance;
-              //stream : FirebaseFirestore.instance.collection('Products').snapshots().map((snapshot) => snapshot.docs.map((e) => Entry.));
-              //Query<Map<String,dynamic>> documentReference=FirebaseFirestore.instance.collection('Products').where('name',isEqualTo: deleteProductName.text.toString().trim());
-              //documentReference.get()
-              //Query<Map<String,dynamic>> a= FirebaseFirestore.instance.collection('Products').where('name',isEqualTo: deleteProductName.text.toString().trim());
-              //var s=await FirebaseFirestore.instance.collection('Products').where('name',isEqualTo: deleteProductName.text.toString().trim()).get();
-              //print(s);
-              //await FirebaseFirestore.instance.collection('Products')
-              //String id=FirebaseFirestore.instance.collection('Products').id;
-              //Map<String, dynamic> user = jsonDecode(a);
-              //print(a);
-              //DocumentReference document=FirebaseFirestore.instance.collection('Products').doc();
-              //DocumentSnapshot docSnap=await document.get();
-              //var docID=docSnap.reference.id;
-              //print(docID.toString());
-             //await FirebaseFirestore.instance.collection('Products').where('name',isEqualTo: deleteProductName.text.toString().trim()).get();
-              /*StreamBuilder<QuerySnapshot>(
-                stream: FirebaseFirestore.instance.collection('Products').snapshots().map((event) => e),
-                builder: (context,snapshot),
-              );*/
+              CollectionReference collection = FirebaseFirestore.instance.collection('Products');
+              collection.snapshots().listen((event) async {
+            for (var doc in event.docs)
+            {
+              final  name=doc.data()['name'];
+              if(name==deleteProductName.text.toString().trim())
+              {
+                var docId=doc.id;
+                await FirebaseFirestore.instance.collection('Products').doc(docId).delete().whenComplete(() {print('deleted');});
+              }
+            }});
             },
             child: Text("Delete",style: TextStyle(color: Colors.black)),
           )

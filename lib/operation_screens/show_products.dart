@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 
 class ShowProducts extends StatelessWidget
 {
+  final List<Widget> servicesWidgets=[];
+  final position=0;
   @override
   Widget build(BuildContext context)
   {
@@ -12,34 +14,31 @@ class ShowProducts extends StatelessWidget
         centerTitle: true
       ),
       body: StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance.collection('Products').orderBy('timestamp',descending: true).snapshots(),
-        builder:(BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot)
+        stream: FirebaseFirestore.instance.collection('Products').snapshots(),
+        builder:(BuildContext context,snapshot)
           {
             if(snapshot.hasData)
               {
-                /*ListView.builder(
-                  padding: const EdgeInsets.all(10.0),
-                  itemBuilder: (BuildContext context, int index) =>
-                      Text(snapshot.data!.documents[index]['content']),
-                  itemCount: snapshot.data!.documents.length,
-                );*/
-                final services=snapshot.data!.docs;
-                List<Widget> servicesWidgets=[];
+                final List<DocumentSnapshot> services=snapshot.data.docs;
                 for(var x in services)
                   {
-                    //final  name=x.data()!['name'];
-                    final price=x.id;
+                    final  name=x.data()['name'];
+                    final price=x.data()['price'].toString();
                     print(price);
+                    final values=builtListTile(name,price,context);
+                    servicesWidgets.add(values);
                   }
-                //final values=builtListTile(name,price,context);
-                //servicesWidgets.add(values);
               }
-            return ListView(
-              children: [
-                Text("sas")
-              ]
+            return ListView.builder(
+              itemCount: servicesWidgets.length,
+              itemBuilder: (context,position)
+              {
+                return servicesWidgets.elementAt(position);
+              },
             );
-          }
+          }//children: servicesWidgets,
+          //shrinkWrap: false,
+          //physics: NeverScrollableScrollPhysics(),
       ),
     );
   }
@@ -48,7 +47,7 @@ class ShowProducts extends StatelessWidget
     return ListTile(
       title: Text(name, style: TextStyle(fontSize: 20.0)),
       subtitle: Text(price, style: TextStyle(fontSize: 12.0)),
-    );
+      onTap: (){});
   }
   void readData() async
   {
