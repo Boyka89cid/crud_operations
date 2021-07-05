@@ -37,8 +37,6 @@ class ShowProducts extends StatelessWidget
               },
             );
           }//children: servicesWidgets,
-          //shrinkWrap: false,
-          //physics: NeverScrollableScrollPhysics(),
       ),
     );
   }
@@ -48,10 +46,5 @@ class ShowProducts extends StatelessWidget
       title: Text(name, style: TextStyle(fontSize: 20.0)),
       subtitle: Text(price, style: TextStyle(fontSize: 12.0)),
       onTap: (){});
-  }
-  void readData() async
-  {
-    DocumentSnapshot ds=await FirebaseFirestore.instance.collection('Products').doc().get();
-    print(ds.data());
   }
 }
