@@ -1,28 +1,36 @@
+import 'package:camera/camera.dart';
 import 'package:crud_operations/authentication/auth.dart';
 import 'package:crud_operations/operation_screens/add_product.dart';
+import 'package:crud_operations/operation_screens/camera_operation.dart';
 import 'package:crud_operations/operation_screens/delete_product.dart';
 import 'package:crud_operations/operation_screens/show_products.dart';
 import 'package:crud_operations/operation_screens/update_product.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'dart:async';
 
 Future<void > main() async
 {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+  final cameras=await availableCameras();
+  final firstCamera=cameras.first;
   runApp(
     MaterialApp(
-      home: UpdateProduct(),
+      home: Home(firstCamera),
     )
   );
 }
 
 class Home extends StatelessWidget
 {
-  final AuthService _authService=AuthService();
+  final AuthService authService=AuthService();
   final emailID=TextEditingController();
   final password=TextEditingController();
+  CameraDescription firstCamera;
+
+  Home(CameraDescription firstCamera) {this.firstCamera=firstCamera;}
   @override
   Widget build(BuildContext context)
   {
@@ -57,14 +65,19 @@ class Home extends StatelessWidget
               ),
             ),
           ElevatedButton(
-            onPressed: () async
-            {
-              dynamic result=await _authService.signInWithEmailPassword(emailID.text.toString().trim(),password.text.toString().trim());
-              if(result!=null)
-                print(result);
-              else
-                print("Not logged In");
-            },
+              onPressed: () async
+              {
+                print(emailID.text);
+                print(password.text);
+                dynamic result=await authService.signInMailPassword(emailID.text.toString().trim(),password.text.toString().trim()).then((value) {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => TakingPictureScreen(firstCamera)));
+                });
+                if(result==null)
+                  print('no');
+                else
+                  print(result);
+                //Navigator.push(context, MaterialPageRoute(builder: (context) => TakingPictureScreen(firstCamera)));
+              },
             child: Text("Login", style: TextStyle(color: Colors.black))
           )
         ],
