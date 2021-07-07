@@ -83,7 +83,6 @@ class TakingPictureScreenState extends State<TakingPictureScreen>
 
                                 final Reference _firebaseStorageInstance=FirebaseStorage.instance.ref().child('imagesByUser/$finalImagePath');
                                 _firebaseStorageInstance.putFile(File(finalImagePath)).whenComplete( () { print('uploaded'); });
-
                                 //await _firebaseStorageInstance.putFile(f).whenComplete(() {print('Uploaded');});
                               }catch(e){print(e);}
                             },
