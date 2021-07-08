@@ -5,7 +5,9 @@ class DisplayImages extends StatelessWidget
 {
   String filePaths;
   DisplayImages(String filePaths)
-  {this.filePaths=filePaths;}
+  {
+    this.filePaths=filePaths;
+  }
 
   @override
   Widget build(BuildContext context)

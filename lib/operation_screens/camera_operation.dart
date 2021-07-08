@@ -136,12 +136,12 @@ class TakingPictureScreenState extends State<TakingPictureScreen>
 
     );
   }
-  Future addImagePath(String p) async
+  /*Future addImagePath(String p) async
   {
     await ImageDownloader.findPath(p).whenComplete(()
     {
       downloadedPath.add(p);
       counter--;
     });
-  }
+  }*/
 }
