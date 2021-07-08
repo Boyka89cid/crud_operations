@@ -1,13 +1,20 @@
 import 'dart:io';
 
 import 'package:camera/camera.dart';
+import 'package:crud_operations/main.dart';
+import 'package:crud_operations/operation_screens/displaying_images.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:image_downloader/image_downloader.dart';
+import 'display_images.dart';
 
 class TakingPictureScreen extends StatefulWidget
 {
   CameraDescription firstCamera;
-  TakingPictureScreen(CameraDescription firstCamera){this.firstCamera=firstCamera;}
+  TakingPictureScreen(CameraDescription firstCamera)
+  {
+    this.firstCamera=firstCamera;
+  }
 
   //TakingPictureScreen({Key key,  this.firstCamera}) : super(key: key);
 
@@ -18,6 +25,9 @@ class TakingPictureScreenState extends State<TakingPictureScreen>
 {
   CameraController _controller;
   Future<void> _initializeControllerFuture;
+  List<String> downloadedPath=[];
+  List<String> imagesNames=['firstName','secondName','thirdName','forthName','fifthName'];
+  int counter=0; int counter2=0;
   @override
   void initState()
   {
@@ -34,10 +44,12 @@ class TakingPictureScreenState extends State<TakingPictureScreen>
   @override
   Widget build(BuildContext context)
   {
+
+    //nameOfPhotos.add('firstOne');
     return Scaffold(
       appBar: AppBar(
         title: Text('Take A Picture'),
-        centerTitle: true
+        centerTitle: true,
       ),
       body: FutureBuilder<void>(
       future: _initializeControllerFuture,
@@ -49,7 +61,9 @@ class TakingPictureScreenState extends State<TakingPictureScreen>
             return const Center(child: CircularProgressIndicator());
         }
       ),
+
       floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.camera_alt),
         onPressed: () async
         {
           try                    // Take the Picture in a try / catch block. If anything goes wrong,// catch the error.
@@ -65,38 +79,69 @@ class TakingPictureScreenState extends State<TakingPictureScreen>
                         title: Text('Add to Database'),
                         centerTitle: true
                       ),
-                      body: Center(
-                        child: Container(
-                          color: Colors.blue,
-                          child: TextButton(
-                            onPressed: () async
-                            {
-                              try
-                              {
-                                //final  ImagePicker picker=ImagePicker(); //Setting Image Picker
-                                //final PickedFile pickedImage=await picker.getImage(source: ImageSource.camera); //Getting Image form Camera and storing as file
-                                //final finalImageFile=File(pickedImage.path); //Getting the file as finalImageFile
-
-                                //final filePicker=FilePicker.platform;
-                                //final finalFile=await filePicker.pickFiles(type:FileType.image);
-                                //final File x=Image.file(File(finalImagePath));
-
-                                final Reference _firebaseStorageInstance=FirebaseStorage.instance.ref().child('imagesByUser/$finalImagePath');
-                                _firebaseStorageInstance.putFile(File(finalImagePath)).whenComplete( () { print('uploaded'); });
-                                //await _firebaseStorageInstance.putFile(f).whenComplete(() {print('Uploaded');});
-                              }catch(e){print(e);}
-                            },
-                            child: Text('Add to Storage',style: TextStyle(color: Colors.black))
+                      body: Column(
+                        children: [
+                          Center(
+                            child: Container(
+                              color: Colors.blue,
+                              child: TextButton(
+                                onPressed: () async
+                                {
+                                  try
+                                  {
+                                    final String finalPathForImageByAnUser=Home.pathToImages;
+                                    final Reference _firebaseStorageInstance=FirebaseStorage.instance.ref().child('imagesBy$finalPathForImageByAnUser/${imagesNames[counter]}');
+                                    await _firebaseStorageInstance.putFile(File(finalImagePath)).whenComplete( () {
+                                      print('uploaded');
+                                      counter++;
+                                    });
+                                  }catch(e){print(e);}
+                                },
+                                child: Text('Add to Storage',style: TextStyle(color: Colors.black))
+                              )
+                            ),
+                          ),
+                          Center(
+                            child: Container(
+                              margin: EdgeInsets.only(top: 10.0),
+                              color: Colors.blue,
+                              child: TextButton(
+                                child: Text('Show Images', style: TextStyle(color: Colors.black),),
+                                onPressed: () async
+                                {
+                                  //await FirebaseStorage.instance.ref().child('imagesByUser').listAll();
+                                      final String finalPathForImageByAnUser=Home.pathToImages;
+                                      String _reference=await FirebaseStorage.instance.ref().child("imagesBy$finalPathForImageByAnUser/${imagesNames[counter2]}").getDownloadURL();
+                                      var imageId = await ImageDownloader.downloadImage(_reference).whenComplete(()
+                                      {
+                                        print('downloaded');
+                                        counter2++;
+                                      });
+                                      String path = await ImageDownloader.findPath(imageId);
+                                      //await addImagePath(path);
+                                  await Navigator.push(context, MaterialPageRoute(builder: (context)=>DisplayImages(path)));
+                                },
+                              ),
+                            ),
                           )
-                        ),
+                        ],
                       )
                     );
                   }
                 ));
               }catch(e){print(e);}
-        }
+        },
         ),
 
+
     );
+  }
+  Future addImagePath(String p) async
+  {
+    await ImageDownloader.findPath(p).whenComplete(()
+    {
+      downloadedPath.add(p);
+      counter--;
+    });
   }
 }

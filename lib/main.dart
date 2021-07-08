@@ -28,6 +28,7 @@ class Home extends StatelessWidget
   final AuthService authService=AuthService();
   final emailID=TextEditingController();
   final password=TextEditingController();
+  static String pathToImages;
   CameraDescription firstCamera;
 
   Home(CameraDescription firstCamera) {this.firstCamera=firstCamera;}
@@ -69,8 +70,11 @@ class Home extends StatelessWidget
               {
                 print(emailID.text);
                 print(password.text);
-                dynamic result=await authService.signInMailPassword(emailID.text.toString().trim(),password.text.toString().trim()).then((value) {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => TakingPictureScreen(firstCamera)));
+                dynamic result=await authService.signInMailPassword(emailID.text.toString().trim(),password.text.toString().trim()).then((value)
+                {
+                 //FirebaseAuth.instance.currentUser;
+                  pathToImages=emailID.text.toString().trim()+password.text.toString().trim();
+                 Navigator.push(context, MaterialPageRoute(builder: (context) => TakingPictureScreen(firstCamera)));
                 });
                 if(result==null)
                   print('no');
